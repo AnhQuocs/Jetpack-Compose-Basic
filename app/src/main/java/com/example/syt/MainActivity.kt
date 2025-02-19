@@ -4,7 +4,11 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -28,11 +32,15 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,68 +68,125 @@ fun HomeScreenApp() {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.picwhite),
+            contentDescription = "",
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop
+        )
+    }
+
     Column(
-        modifier = Modifier.padding(24.dp, 36.dp, 24.dp, 24.dp)
+        modifier = Modifier.padding(24.dp, 96.dp, 24.dp, 24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        LoginTextField(email = email, onMailChange = {email = it})
-        Spacer(modifier = Modifier.padding(top = 12.dp))
-        PasswordTextField(password = password, onPasswordChange = {password = it})
+        Text(
+            "Welcome Back",
+            fontSize = 52.sp,
+            textAlign = TextAlign.Center,
+            color = Color(0xFF33CC66)
+        )
+
+        Spacer(modifier = Modifier.padding(top = 64.dp))
+
+        EmailTextField(email = email, onMailChange = {email = it})
+
         Spacer(modifier = Modifier.padding(top = 24.dp))
+
+        PasswordTextField(password = password, onPasswordChange = {password = it})
+
+        Spacer(modifier = Modifier.padding(top = 24.dp))
+
         LoginButton()
+
+        Row (
+            modifier = Modifier.padding(0.dp, 24.dp)
+        ) {
+            Text("Don't have a account? ", fontSize = 19.sp)
+            Text(
+                "Sign up.",
+                color = Color(0xFF33CC66),
+                fontSize = 19.sp,
+                textDecoration = TextDecoration.Underline,
+                modifier = Modifier.clickable {  }
+            )
+        }
     }
 }
 
 @Composable
-fun LoginTextField(email : String, onMailChange : (String) -> Unit) {
-    OutlinedTextField(
-        value = email,
-        onValueChange = onMailChange,
-        label = {Text("Email Address", color = Color.Gray)},
-        leadingIcon = {
-            Icon(
-                Icons.Default.Email,
-                contentDescription = "",
-                tint = Color(0xFF33CC66)
-            )
-        },
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium
-    )
+fun EmailTextField(email : String, onMailChange : (String) -> Unit) {
+    Column () {
+        Text(
+            "Email Address",
+            fontSize = 18.sp,
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 4.dp, top = 36.dp)
+        )
+
+        OutlinedTextField(
+            value = email,
+            onValueChange = onMailChange,
+            label = {Text("Email Address", color = Color.Gray)},
+            leadingIcon = {
+                Icon(
+                    Icons.Default.Email,
+                    contentDescription = "",
+                    tint = Color(0xFF33CC66)
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium
+        )
+    }
 }
+
 
 @Composable
 fun PasswordTextField(password : String, onPasswordChange : (String)  -> Unit) {
     var isShowPassword by remember {
         mutableStateOf(false)
     }
-    OutlinedTextField(
-        value = password,
-        onValueChange = onPasswordChange,
-        label = {Text("Password", color = Color.Gray)},
-        leadingIcon = {
-            Icon(
-                Icons.Default.Lock,
-                contentDescription = "",
-                tint = Color(0xFF33CC66)
-            )
-        },
-        trailingIcon = {
-            IconButton(
-                onClick = {
-                    isShowPassword = !isShowPassword
-                }
-            ) {
+    Column () {
+        Text(
+            "Password",
+            fontSize = 18.sp,
+            modifier = Modifier
+                .align(Alignment.Start)
+                .padding(start = 4.dp)
+        )
+        OutlinedTextField(
+            value = password,
+            onValueChange = onPasswordChange,
+            label = {Text("Password", color = Color.Gray)},
+            leadingIcon = {
                 Icon(
-                    if(isShowPassword) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                    Icons.Default.Lock,
                     contentDescription = "",
                     tint = Color(0xFF33CC66)
                 )
-            }
-        },
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        visualTransformation = if(isShowPassword) VisualTransformation.None else PasswordVisualTransformation()
-    )
+            },
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        isShowPassword = !isShowPassword
+                    }
+                ) {
+                    Icon(
+                        if(isShowPassword) Icons.Filled.VisibilityOff else Icons.Filled.Visibility,
+                        contentDescription = "",
+                        tint = Color(0xFF33CC66)
+                    )
+                }
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = MaterialTheme.shapes.medium,
+            visualTransformation = if(isShowPassword) VisualTransformation.None else PasswordVisualTransformation()
+        )
+    }
+
 }
 
 @Composable
@@ -135,7 +200,7 @@ fun LoginButton() {
             .fillMaxWidth()
             .height(50.dp)
     ) {
-        Text("Login", fontSize = 24.sp, textAlign = TextAlign.Center)
+        Text("Login", fontSize = 22.sp, textAlign = TextAlign.Center)
     }
 }
 
