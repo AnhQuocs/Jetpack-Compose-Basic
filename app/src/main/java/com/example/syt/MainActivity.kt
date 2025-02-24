@@ -10,12 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Mic
 import androidx.compose.material.icons.filled.Photo
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -67,9 +69,13 @@ fun HomeScreenApp() {
             TextField(value = "", onValueChange = {}, modifier = Modifier.weight(1f))
             Icon(Icons.Default.Save, contentDescription = "Save", Modifier.size(50.dp).padding(start = 6.dp))
         }
-        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 24.dp)) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 24.dp, bottom = 24.dp)) {
             TextField(value = "", onValueChange = {}, modifier = Modifier.weight(1f))
             Icon(Icons.Default.Photo, contentDescription = "", Modifier.size(50.dp).padding(start = 6.dp))
+        }
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            TextField(value = "", onValueChange = {}, modifier = Modifier.weight(1f))
+            Icon(Icons.Default.Mic, contentDescription = "", Modifier.size(50.dp).padding(start = 6.dp))
         }
     }
 }
