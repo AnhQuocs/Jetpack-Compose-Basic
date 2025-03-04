@@ -3,7 +3,6 @@ package com.example.syt
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -14,11 +13,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -52,14 +54,13 @@ import com.example.syt.ui.theme.SYTTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContent {
             SYTTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    HomeScreenApp()
+                    CategoryScreen()
                 }
             }
         }
@@ -68,7 +69,11 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun HomeScreenApp() {
-        Column (modifier = Modifier.fillMaxSize()) {
+        Column (
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(WindowInsets.statusBars.asPaddingValues())
+        ) {
             Spacer(modifier = Modifier.padding(top = 24.dp))
             Spacer(modifier = Modifier.padding(top = 12.dp))
             VideoDetailScreen(Modifier.padding(4.dp), icon = R.drawable.avt, name = "haha")
@@ -123,7 +128,8 @@ fun FilterCategory(modifier: Modifier = Modifier) {
                 selected = isSelected,
                 onClick = {isSelected = !isSelected},
                 label = {Text(category.name)},
-                modifier = Modifier.padding(8.dp)
+                modifier = Modifier
+                    .padding(8.dp)
             )
         }
 
