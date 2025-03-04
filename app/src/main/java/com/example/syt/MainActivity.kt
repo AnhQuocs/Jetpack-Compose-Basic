@@ -1,12 +1,17 @@
 package com.example.syt
 
 import android.os.Bundle
+import android.provider.MediaStore.Video
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +21,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -38,6 +44,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.syt.ui.theme.SYTTheme
+import com.example.syt.VideoYT
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -65,18 +72,59 @@ fun HomeScreenApp() {
         }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun VideoDetailScreen(modifier: Modifier = Modifier, @DrawableRes icon: Int, name: String) {
-    LazyColumn {
+    val listVideos = fakeVideoData()
+    LazyColumn(verticalArrangement = Arrangement.spacedBy(24.dp)) {
+//        item {
+//            NextVideoInfo(thumb = R.drawable.screen_yt_as, channel = "AnhQuocs", videoTitle = "How to use Android Studio", views = 1916, timeAgo = "1 day ago", Modifier.padding(bottom = 24.dp))
+//            NextVideoInfo(thumb = R.drawable.screen_yt_sleep, channel = "AnhQuocs", videoTitle = "How to sleep 8 hours in 30 minutes", views = 2036, timeAgo = "2 days ago", Modifier.padding(bottom = 24.dp))
+//            NextVideoInfo(thumb = R.drawable.screen_yt_sj, channel = "AnhQuocs", videoTitle = "How to get A+ in all subjects", views = 5034, timeAgo = "3 days ago", Modifier.padding(bottom = 24.dp))
+//            NextVideoInfo(thumb = R.drawable.screen_yt, channel = "AnhQuocs", videoTitle = "How to get a high paying easy job", views = 5000, timeAgo = "1 day ago", Modifier.padding(bottom = 24.dp))
+//            NextVideoInfo(thumb = R.drawable.screen_yt, channel = "AnhQuocs", videoTitle = "How to use Android Studio", views = 1000, timeAgo = "1 day ago", Modifier.padding(bottom = 24.dp))
+//            NextVideoInfo(thumb = R.drawable.screen_yt, channel = "AnhQuocs", videoTitle = "How to use Android Studio", views = 1000, timeAgo = "1 day ago", Modifier.padding(bottom = 24.dp))
+//        }
+        stickyHeader {
+            Header()
+        }
+
+        items(listVideos) {
+            video ->
+            NextVideoInfo(thumb = R.drawable.screen_yt_as, channel = "AnhQuocs", videoTitle = video.videoTitle, views = video.views, timeAgo = video.timeAgo)
+        }
+
         item {
-            NextVideoInfo(thumb = R.drawable.screen_yt_as, channel = "AnhQuocs", videoTitle = "How to use Android Studio", views = 1916, timeAgo = "1 day ago", Modifier.padding(bottom = 24.dp))
-            NextVideoInfo(thumb = R.drawable.screen_yt_sleep, channel = "AnhQuocs", videoTitle = "How to sleep 8 hours in 30 minutes", views = 2036, timeAgo = "2 days ago", Modifier.padding(bottom = 24.dp))
-            NextVideoInfo(thumb = R.drawable.screen_yt_sj, channel = "AnhQuocs", videoTitle = "How to get A+ in all subjects", views = 5034, timeAgo = "3 days ago", Modifier.padding(bottom = 24.dp))
-            NextVideoInfo(thumb = R.drawable.screen_yt, channel = "AnhQuocs", videoTitle = "How to get a high paying easy job", views = 5000, timeAgo = "1 day ago", Modifier.padding(bottom = 24.dp))
-            NextVideoInfo(thumb = R.drawable.screen_yt, channel = "AnhQuocs", videoTitle = "How to use Android Studio", views = 1000, timeAgo = "1 day ago", Modifier.padding(bottom = 24.dp))
-            NextVideoInfo(thumb = R.drawable.screen_yt, channel = "AnhQuocs", videoTitle = "How to use Android Studio", views = 1000, timeAgo = "1 day ago", Modifier.padding(bottom = 24.dp))
+            Footer()
         }
     }
+}
+
+@Composable
+fun Header() {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(100.dp)
+        .background(color = Color(0xFF33CC66))
+    )
+}
+
+@Composable
+fun Footer() {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(50.dp)
+        .background(color = Color(0xFF33CC66))
+    )
+}
+
+fun fakeVideoData(): List<VideoYT> {
+    val list = mutableListOf<VideoYT>()
+    for(index in 1..10) {
+        val video = VideoYT(videoTitle = "Video $index", views = index, timeAgo = "$index days")
+        list.add(video)
+    }
+    return list
 }
 
 @Composable
