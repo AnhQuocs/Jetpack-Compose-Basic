@@ -1,7 +1,6 @@
 package com.example.syt
 
 import android.os.Bundle
-import android.provider.MediaStore.Video
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,16 +20,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -44,7 +48,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.example.syt.ui.theme.SYTTheme
-import com.example.syt.VideoYT
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,7 +89,10 @@ fun VideoDetailScreen(modifier: Modifier = Modifier, @DrawableRes icon: Int, nam
 //            NextVideoInfo(thumb = R.drawable.screen_yt, channel = "AnhQuocs", videoTitle = "How to use Android Studio", views = 1000, timeAgo = "1 day ago", Modifier.padding(bottom = 24.dp))
 //        }
         stickyHeader {
-            Header()
+            Column(modifier = Modifier.background(color = Color.White)) {
+                Header()
+                FilterCategory()
+            }
         }
 
         items(listVideos) {
@@ -94,9 +100,6 @@ fun VideoDetailScreen(modifier: Modifier = Modifier, @DrawableRes icon: Int, nam
             NextVideoInfo(thumb = R.drawable.screen_yt_as, channel = "AnhQuocs", videoTitle = video.videoTitle, views = video.views, timeAgo = video.timeAgo)
         }
 
-        item {
-            Footer()
-        }
     }
 }
 
@@ -104,18 +107,36 @@ fun VideoDetailScreen(modifier: Modifier = Modifier, @DrawableRes icon: Int, nam
 fun Header() {
     Box(modifier = Modifier
         .fillMaxWidth()
-        .height(100.dp)
+        .height(200.dp)
         .background(color = Color(0xFF33CC66))
     )
 }
 
 @Composable
-fun Footer() {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .height(50.dp)
-        .background(color = Color(0xFF33CC66))
-    )
+fun FilterCategory(modifier: Modifier = Modifier) {
+    var isSelected by remember { mutableStateOf(false)}
+    val listCategorys = fakeCategory()
+    LazyRow (modifier = Modifier) {
+        items(listCategorys) {
+            category ->
+            FilterChip(
+                selected = isSelected,
+                onClick = {isSelected = !isSelected},
+                label = {Text(category.name)},
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+
+    }
+}
+
+fun fakeCategory(): List<VideoCategory> {
+    val list = mutableListOf<VideoCategory> ()
+    for(index in 1..10) {
+        val category = VideoCategory(id = index, name = "Category $index")
+        list.add(category)
+    }
+    return list
 }
 
 fun fakeVideoData(): List<VideoYT> {
