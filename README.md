@@ -4,3 +4,6 @@
 
 **Constraint Layout:
 ![Constraint Layout](image/constraintlayout.png)
+
+**Constraint Layout:
+![Constraint Layout](image/lazy_grid.png)
