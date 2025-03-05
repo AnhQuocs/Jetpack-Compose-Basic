@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,17 +22,18 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun CategoryScreen(modifier: Modifier = Modifier) {
-    LazyVerticalGrid(columns = GridCells.Fixed(2),
-        horizontalArrangement = Arrangement.spacedBy(12.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp)
-    ) {
-
-        items(20) {
-            index ->
-            Item(index = index)
+    Box {
+        LazyHorizontalGrid(rows = GridCells.Fixed(2),
+            modifier = Modifier.height(400.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 24.dp)
+        ) {
+            items(10) {
+                    index ->
+                Item(index = index)
+            }
         }
-
     }
 }
 
