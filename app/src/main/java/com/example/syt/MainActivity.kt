@@ -1,141 +1,164 @@
 package com.example.syt
 
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.navigation.NavType
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
+import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import com.example.syt.ui.catalog.category.CategoryScreen
+import com.example.syt.ui.catalog.product.ProductDetailScreen
+import com.example.syt.ui.checkout.CheckoutScreen
+import com.example.syt.ui.checkout.CheckoutSuccessScreen
+import com.example.syt.ui.customer.AddressDetailScreen
+import com.example.syt.ui.customer.CustomerInfoScreen
+import com.example.syt.ui.customer.MyAccountScreen
+import com.example.syt.ui.home.HomeScreen
 import com.example.syt.ui.theme.SYTTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            SYTTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+            MainApp()
+        }
+    }
+}
+
+@Composable
+fun MainApp() {
+    val navController = rememberNavController()
+    SYTTheme {
+        // navHost <---- composable,
+        // navController <---- navigate
+        NavHost(navController = navController, startDestination = "home") {
+            //route: home
+            composable("home") {
+                HomeScreen(
+                    openCategoryAction = {
+                        navController.navigate("category")
+                    },
+                    openMyAccountScreen = {
+                        navController.navigate("myAccount")
+                    },
+                    editCustomerInfo = {
+                        navController.navigate("customerInfo")
+                    },
+                )
+            }
+
+            //route: category
+            composable("category") {
+                CategoryScreen(openProductDetail = {
+                    productId ->
+                    navController.navigate("productDetail/$productId")
+                })
+            }
+
+            // route: product detail
+            // lấy dữ liệu từ category screen
+            composable("productDetail/{productId}",
+                arguments = listOf(
+                navArgument("productId") {
+                    type = NavType.StringType
+                }
+            )) {
+                backStackEntry ->
+                val productId = backStackEntry.arguments?.getString("productId")
+                requireNotNull(productId)
+                ProductDetailScreen(productId = productId, checkout = {
+                    cartId, customerId ->
+                    navController.navigate("checkout/$cartId/$customerId")
+                },
+                    backAction = {navController.popBackStack()}
+                )
+            }
+
+            // route: checkout
+            composable("checkout/{cartId}/{customerId}",
+                arguments = listOf(
+                    navArgument("cartId") {
+                        type = NavType.StringType
+                    },
+                    navArgument("customerId") {
+                        type = NavType.StringType
+                    }
+                )
+            ) {
+                navBackStackEntry ->
+                navBackStackEntry.arguments?.let {
+                    argument ->
+                    val cartId = argument.getString("cartId")
+                    val customerId = argument.getString("customerId")
+                    requireNotNull(cartId)
+                    requireNotNull(customerId)
+                    CheckoutScreen(cartId = cartId, customerId = customerId) {
+                        navController.navigate("checkoutSuccess")
+                    }
+                }
+            }
+
+            //route: checkout success
+            composable("checkoutSuccess") {
+                CheckoutSuccessScreen(goHomeAction = {
+                    navController.popBackStack("home", inclusive = false, saveState = true)
+                }, viewOrderDetailAction = {})
+            }
+
+            // route: customer
+            navigation(route = "customer", startDestination = "myAccount") {
+                //route: my account
+                composable("myAccount") {
+                    MyAccountScreen(navController = navController, openAddressScreen = {
+                            addressId ->
+                        val route = if (addressId == null) "addressDetail" else "addressDetail?addressId=$addressId"
+                        navController.navigate(route)
+                    })
+                }
+
+                //route: customerInfo
+                composable("customerInfo") {
+                    CustomerInfoScreen {
+                        navController.popBackStack()
+                    }
+                }
+
+                //route: address detail
+                composable("addressDetail") {
+                    AddressDetailScreen(null, saveAddressAndBack = {})
+                }
+                composable("addressDetail?addressId={addressId}",
+                    arguments = listOf(
+                        navArgument("addressId") {
+                            type = NavType.StringType
+                            nullable = true
+                        }
+                    )
                 ) {
-//                    CategoryScreen()
-                    HomeScreenApp()
+                        backStackEntry ->
+                    val addressId = backStackEntry.arguments?.getString("addressId")
+                    AddressDetailScreen(addressId, saveAddressAndBack = {
+                            addressId ->
+                        navController.previousBackStackEntry?.savedStateHandle?.set("new_address_id", addressId)
+                        navController.popBackStack()
+                    })
                 }
             }
         }
     }
 }
 
-@Composable
-fun HomeScreenApp() {
-        Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(WindowInsets.statusBars.asPaddingValues())
-        ) {
-            LoginScreen()
-        }
-}
-
-@Composable
-fun LoginScreen() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Log.e("frank", "login screen start")
-        Welcome()
-
-        var email by rememberSaveable { mutableStateOf("") }
-        var password by rememberSaveable { mutableStateOf("") }
-
-        EmailTextField(email, { email = it })
-        Spacer(Modifier.padding(bottom = 12.dp))
-        PasswordTextField(password, { password = it })
-
-        Spacer(Modifier.padding(bottom = 12.dp))
-
-        Button(onClick = {}, modifier = Modifier.width(280.dp)) {
-            Text("Login")
-        }
-
-        Log.e("frank", "login screen end")
-    }
-}
-
-@Composable
-fun EmailTextField(email: String, onEmailChange: (String) -> Unit) {
-    Log.e("frank", "email")
-    OutlinedTextField (
-        value = email,
-        onValueChange = onEmailChange,
-        label = {
-            Text("Email", style = TextStyle(color = Color.Gray, fontSize = 15.sp))
-        },
-        shape = MaterialTheme.shapes.medium
-    )
-}
-
-@Composable
-fun PasswordTextField(password: String, onPasswordChange: (String) -> Unit) {
-    Log.e("frank", "password")
-    OutlinedTextField (
-        value = password,
-        onValueChange = onPasswordChange,
-        label = {
-            Text("Password", style = TextStyle(color = Color.Gray, fontSize = 16.sp))
-        },
-        shape = MaterialTheme.shapes.medium
-    )
-}
-
-//state less
-@Composable
-fun Welcome() {
-    Log.e("frank", "welcome start")
-    Text(
-        "Login to your account",
-        style = TextStyle (
-            fontSize = 22.sp,
-            color = Color(0xFF33CC66)
-        )
-    )
-    Log.e("frank", "welcome end")
-}
 
 @Preview(showBackground = true)
 @Composable
 fun GreetingPreview() {
     SYTTheme {
-        HomeScreenApp()
+        MainApp()
     }
 }
 
@@ -144,7 +167,85 @@ fun GreetingPreview() {
 
 
 
-// List and Grid - Lazy Column - Lazy Row - 04/03/2025
+
+
+
+
+
+
+// *** State - 05/03/2025
+//@Composable
+//fun LoginScreen() {
+//    Column(
+//        modifier = Modifier
+//            .fillMaxSize()
+//            .padding(24.dp),
+//        verticalArrangement = Arrangement.Center,
+//        horizontalAlignment = Alignment.CenterHorizontally
+//    ) {
+//        Log.e("frank", "login screen start")
+//        Welcome()
+//
+//        var email by rememberSaveable { mutableStateOf("") }
+//        var password by rememberSaveable { mutableStateOf("") }
+//
+//        EmailTextField(email, { email = it })
+//        Spacer(Modifier.padding(bottom = 12.dp))
+//        PasswordTextField(password, { password = it })
+//
+//        Spacer(Modifier.padding(bottom = 12.dp))
+//
+//        Button(onClick = {}, modifier = Modifier.width(280.dp)) {
+//            Text("Login")
+//        }
+//
+//        Log.e("frank", "login screen end")
+//    }
+//}
+//
+//@Composable
+//fun EmailTextField(email: String, onEmailChange: (String) -> Unit) {
+//    Log.e("frank", "email")
+//    OutlinedTextField (
+//        value = email,
+//        onValueChange = onEmailChange,
+//        label = {
+//            Text("Email", style = TextStyle(color = Color.Gray, fontSize = 15.sp))
+//        },
+//        shape = MaterialTheme.shapes.medium
+//    )
+//}
+//
+//@Composable
+//fun PasswordTextField(password: String, onPasswordChange: (String) -> Unit) {
+//    Log.e("frank", "password")
+//    OutlinedTextField (
+//        value = password,
+//        onValueChange = onPasswordChange,
+//        label = {
+//            Text("Password", style = TextStyle(color = Color.Gray, fontSize = 16.sp))
+//        },
+//        shape = MaterialTheme.shapes.medium
+//    )
+//}
+//
+////state less
+//@Composable
+//fun Welcome() {
+//    Log.e("frank", "welcome start")
+//    Text(
+//        "Login to your account",
+//        style = TextStyle (
+//            fontSize = 22.sp,
+//            color = Color(0xFF33CC66)
+//        )
+//    )
+//    Log.e("frank", "welcome end")
+//}
+
+
+
+// *** List and Grid - Lazy Column - Lazy Row - 04/03/2025
 
 //@OptIn(ExperimentalFoundationApi::class)
 //@Composable
