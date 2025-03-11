@@ -3,153 +3,111 @@ package com.example.syt
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.layout.getDefaultLazyLayoutKey
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
-import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.example.syt.ui.catalog.category.CategoryScreen
-import com.example.syt.ui.catalog.product.ProductDetailScreen
-import com.example.syt.ui.checkout.CheckoutScreen
-import com.example.syt.ui.checkout.CheckoutSuccessScreen
-import com.example.syt.ui.customer.AddressDetailScreen
-import com.example.syt.ui.customer.CustomerInfoScreen
-import com.example.syt.ui.customer.MyAccountScreen
-import com.example.syt.ui.home.HomeScreen
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.syt.ui.theme.SYTTheme
+import kotlin.random.Random
+
+// step 1: define ComposableLocal
+// step 2: bind composable
+// step 3: using
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MainApp()
+
+            CompositionLocalProvider(LocalAppColor provides  AppColor(bodyTextColor = Color.Black)) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    MainApp()
+                }
+            }
+
         }
     }
 }
 
 @Composable
 fun MainApp() {
-    val navController = rememberNavController()
-    SYTTheme {
-        // navHost <---- composable,
-        // navController <---- navigate
-        NavHost(navController = navController, startDestination = "home") {
-            //route: home
-            composable("home") {
-                HomeScreen(
-                    openCategoryAction = {
-                        navController.navigate("category")
-                    },
-                    openMyAccountScreen = {
-                        navController.navigate("myAccount")
-                    },
-                    editCustomerInfo = {
-                        navController.navigate("customerInfo")
-                    },
-                )
+
+    var bodyTextColor by remember {
+        mutableStateOf(Color.Black)
+    }
+
+    Column(
+        modifier = Modifier.padding(24.dp)
+    ) {
+        Header("Jetpack Compose")
+        Spacer(modifier = Modifier.height(12.dp))
+        Text("Composition local", color = LocalAppColor.current.bodyTextColor, fontSize = 18.sp)
+        Spacer(modifier = Modifier.height(12.dp))
+        Body("Changeable text color", bodyTextColor)
+        Spacer(modifier = Modifier.height(12.dp))
+        Button(
+            onClick = {
+                bodyTextColor = getColor()
             }
-
-            //route: category
-            composable("category") {
-                CategoryScreen(openProductDetail = {
-                    productId ->
-                    navController.navigate("productDetail/$productId")
-                })
-            }
-
-            // route: product detail
-            // lấy dữ liệu từ category screen
-            composable("productDetail/{productId}",
-                arguments = listOf(
-                navArgument("productId") {
-                    type = NavType.StringType
-                }
-            )) {
-                backStackEntry ->
-                val productId = backStackEntry.arguments?.getString("productId")
-                requireNotNull(productId)
-                ProductDetailScreen(productId = productId, checkout = {
-                    cartId, customerId ->
-                    navController.navigate("checkout/$cartId/$customerId")
-                },
-                    backAction = {navController.popBackStack()}
-                )
-            }
-
-            // route: checkout
-            composable("checkout/{cartId}/{customerId}",
-                arguments = listOf(
-                    navArgument("cartId") {
-                        type = NavType.StringType
-                    },
-                    navArgument("customerId") {
-                        type = NavType.StringType
-                    }
-                )
-            ) {
-                navBackStackEntry ->
-                navBackStackEntry.arguments?.let {
-                    argument ->
-                    val cartId = argument.getString("cartId")
-                    val customerId = argument.getString("customerId")
-                    requireNotNull(cartId)
-                    requireNotNull(customerId)
-                    CheckoutScreen(cartId = cartId, customerId = customerId) {
-                        navController.navigate("checkoutSuccess")
-                    }
-                }
-            }
-
-            //route: checkout success
-            composable("checkoutSuccess") {
-                CheckoutSuccessScreen(goHomeAction = {
-                    navController.popBackStack("home", inclusive = false, saveState = true)
-                }, viewOrderDetailAction = {})
-            }
-
-            // route: customer
-            navigation(route = "customer", startDestination = "myAccount") {
-                //route: my account
-                composable("myAccount") {
-                    MyAccountScreen(navController = navController, openAddressScreen = {
-                            addressId ->
-                        val route = if (addressId == null) "addressDetail" else "addressDetail?addressId=$addressId"
-                        navController.navigate(route)
-                    })
-                }
-
-                //route: customerInfo
-                composable("customerInfo") {
-                    CustomerInfoScreen {
-                        navController.popBackStack()
-                    }
-                }
-
-                //route: address detail
-                composable("addressDetail") {
-                    AddressDetailScreen(null, saveAddressAndBack = {})
-                }
-                composable("addressDetail?addressId={addressId}",
-                    arguments = listOf(
-                        navArgument("addressId") {
-                            type = NavType.StringType
-                            nullable = true
-                        }
-                    )
-                ) {
-                        backStackEntry ->
-                    val addressId = backStackEntry.arguments?.getString("addressId")
-                    AddressDetailScreen(addressId, saveAddressAndBack = {
-                            addressId ->
-                        navController.previousBackStackEntry?.savedStateHandle?.set("new_address_id", addressId)
-                        navController.popBackStack()
-                    })
-                }
-            }
+        ) {
+            Text("Change text color")
         }
+    }
+}
+
+@Composable
+fun Header(title: String) {
+    Text(title, style = TextStyle(color = Color.Black, fontSize = 24.sp))
+}
+
+@Composable
+fun Body(content: String, bodyTextColor: Color) {
+    CompositionLocalProvider(
+        LocalAppColor provides LocalAppColor.current.copy(bodyTextColor = bodyTextColor)
+    ) {
+        Column() {
+            Text(content, style = TextStyle(color = LocalAppColor.current.bodyTextColor))
+            Spacer(modifier = Modifier.height(12.dp))
+            ImageFeature()
+        }
+    }
+
+}
+
+@Composable
+fun ImageFeature() {
+    Row() {
+        Icon(Icons.Outlined.Person, contentDescription = null)
+        Spacer(modifier = Modifier.width(12.dp))
+        Icon(Icons.Outlined.Refresh, contentDescription = null)
     }
 }
 
@@ -162,12 +120,138 @@ fun GreetingPreview() {
     }
 }
 
+data class AppColor(val bodyTextColor: Color)
+
+val LocalAppColor = compositionLocalOf { AppColor(bodyTextColor = Color.Black) }
+
+fun getColor(): Color {
+    val listColors = listOf(Color.Blue, Color.Red, Color.Yellow, Color.Cyan, Color.LightGray)
+    val index = Random.nextInt(0, 4)
+    return listColors[index]
+}
 
 
 
-
-
-
+// ** Navigation
+//val navController = rememberNavController()
+//SYTTheme {
+//    // navHost <---- composable,
+//    // navController <---- navigate
+//    NavHost(navController = navController, startDestination = "home") {
+//        //route: home
+//        composable("home") {
+//            HomeScreen(
+//                openCategoryAction = {
+//                    navController.navigate("category")
+//                },
+//                openMyAccountScreen = {
+//                    navController.navigate("myAccount")
+//                },
+//                editCustomerInfo = {
+//                    navController.navigate("customerInfo")
+//                },
+//            )
+//        }
+//
+//        //route: category
+//        composable("category") {
+//            CategoryScreen(openProductDetail = {
+//                    productId ->
+//                navController.navigate("productDetail/$productId")
+//            })
+//        }
+//
+//        // route: product detail
+//        // lấy dữ liệu từ category screen
+//        composable("productDetail/{productId}",
+//            arguments = listOf(
+//                navArgument("productId") {
+//                    type = NavType.StringType
+//                }
+//            )) {
+//                backStackEntry ->
+//            val productId = backStackEntry.arguments?.getString("productId")
+//            requireNotNull(productId)
+//            ProductDetailScreen(productId = productId, checkout = {
+//                    cartId, customerId ->
+//                navController.navigate("checkout/$cartId/$customerId")
+//            },
+//                backAction = {navController.popBackStack()}
+//            )
+//        }
+//
+//        // route: checkout
+//        composable("checkout/{cartId}/{customerId}",
+//            arguments = listOf(
+//                navArgument("cartId") {
+//                    type = NavType.StringType
+//                },
+//                navArgument("customerId") {
+//                    type = NavType.StringType
+//                }
+//            )
+//        ) {
+//                navBackStackEntry ->
+//            navBackStackEntry.arguments?.let {
+//                    argument ->
+//                val cartId = argument.getString("cartId")
+//                val customerId = argument.getString("customerId")
+//                requireNotNull(cartId)
+//                requireNotNull(customerId)
+//                CheckoutScreen(cartId = cartId, customerId = customerId) {
+//                    navController.navigate("checkoutSuccess")
+//                }
+//            }
+//        }
+//
+//        //route: checkout success
+//        composable("checkoutSuccess") {
+//            CheckoutSuccessScreen(goHomeAction = {
+//                navController.popBackStack("home", inclusive = false, saveState = true)
+//            }, viewOrderDetailAction = {})
+//        }
+//
+//        // route: customer
+//        navigation(route = "customer", startDestination = "myAccount") {
+//            //route: my account
+//            composable("myAccount") {
+//                MyAccountScreen(navController = navController, openAddressScreen = {
+//                        addressId ->
+//                    val route = if (addressId == null) "addressDetail" else "addressDetail?addressId=$addressId"
+//                    navController.navigate(route)
+//                })
+//            }
+//
+//            //route: customerInfo
+//            composable("customerInfo") {
+//                CustomerInfoScreen {
+//                    navController.popBackStack()
+//                }
+//            }
+//
+//            //route: address detail
+//            composable("addressDetail") {
+//                AddressDetailScreen(null, saveAddressAndBack = {})
+//            }
+//            composable("addressDetail?addressId={addressId}",
+//                arguments = listOf(
+//                    navArgument("addressId") {
+//                        type = NavType.StringType
+//                        nullable = true
+//                    }
+//                )
+//            ) {
+//                    backStackEntry ->
+//                val addressId = backStackEntry.arguments?.getString("addressId")
+//                AddressDetailScreen(addressId, saveAddressAndBack = {
+//                        addressId ->
+//                    navController.previousBackStackEntry?.savedStateHandle?.set("new_address_id", addressId)
+//                    navController.popBackStack()
+//                })
+//            }
+//        }
+//    }
+//}
 
 
 
