@@ -3,37 +3,14 @@ package com.example.syt
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.layout.getDefaultLazyLayoutKey
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material3.Button
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.compositionLocalOf
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.example.syt.ui.CreateNewPasswordScreen
+import com.example.syt.ui.theme.AppTheme
 import com.example.syt.ui.theme.SYTTheme
-import kotlin.random.Random
 
 // step 1: define ComposableLocal
 // step 2: bind composable
@@ -43,15 +20,11 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-
-            CompositionLocalProvider(LocalAppColor provides  AppColor(bodyTextColor = Color.Black)) {
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     MainApp()
                 }
-            }
 
         }
     }
@@ -59,58 +32,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainApp() {
-
-    var bodyTextColor by remember {
-        mutableStateOf(Color.Black)
-    }
-
-    Column(
-        modifier = Modifier.padding(24.dp)
-    ) {
-        Header("Jetpack Compose")
-        Spacer(modifier = Modifier.height(12.dp))
-        Text("Composition local", color = LocalAppColor.current.bodyTextColor, fontSize = 18.sp)
-        Spacer(modifier = Modifier.height(12.dp))
-        Body("Changeable text color", bodyTextColor)
-        Spacer(modifier = Modifier.height(12.dp))
-        Button(
-            onClick = {
-                bodyTextColor = getColor()
-            }
-        ) {
-            Text("Change text color")
-        }
+    AppTheme {
+        CreateNewPasswordScreen()
     }
 }
-
-@Composable
-fun Header(title: String) {
-    Text(title, style = TextStyle(color = Color.Black, fontSize = 24.sp))
-}
-
-@Composable
-fun Body(content: String, bodyTextColor: Color) {
-    CompositionLocalProvider(
-        LocalAppColor provides LocalAppColor.current.copy(bodyTextColor = bodyTextColor)
-    ) {
-        Column() {
-            Text(content, style = TextStyle(color = LocalAppColor.current.bodyTextColor))
-            Spacer(modifier = Modifier.height(12.dp))
-            ImageFeature()
-        }
-    }
-
-}
-
-@Composable
-fun ImageFeature() {
-    Row() {
-        Icon(Icons.Outlined.Person, contentDescription = null)
-        Spacer(modifier = Modifier.width(12.dp))
-        Icon(Icons.Outlined.Refresh, contentDescription = null)
-    }
-}
-
 
 @Preview(showBackground = true)
 @Composable
@@ -120,16 +45,65 @@ fun GreetingPreview() {
     }
 }
 
-data class AppColor(val bodyTextColor: Color)
 
-val LocalAppColor = compositionLocalOf { AppColor(bodyTextColor = Color.Black) }
 
-fun getColor(): Color {
-    val listColors = listOf(Color.Blue, Color.Red, Color.Yellow, Color.Cyan, Color.LightGray)
-    val index = Random.nextInt(0, 4)
-    return listColors[index]
-}
 
+
+
+
+
+// Composition Local - 11/03/2025
+
+//Header("Jetpack Compose")
+//Spacer(modifier = Modifier.height(12.dp))
+//Text("Composition local", color = LocalAppColor.current.bodyTextColor, fontSize = 18.sp)
+//Spacer(modifier = Modifier.height(12.dp))
+//Body("Changeable text color", bodyTextColor)
+//Spacer(modifier = Modifier.height(12.dp))
+//Button(
+//onClick = {
+//    bodyTextColor = getColor()
+//}
+//) {
+//    Text("Change text color")
+//}
+
+//@Composable
+//fun Header(title: String) {
+//    Text(title, style = TextStyle(color = Color.Black, fontSize = 24.sp))
+//}
+//
+//@Composable
+//fun Body(content: String, bodyTextColor: Color) {
+//    CompositionLocalProvider(
+//        LocalAppColor provides LocalAppColor.current.copy(bodyTextColor = bodyTextColor)
+//    ) {
+//        Column() {
+//            Text(content, style = TextStyle(color = LocalAppColor.current.bodyTextColor))
+//            Spacer(modifier = Modifier.height(12.dp))
+//            ImageFeature()
+//        }
+//    }
+//}
+//
+//@Composable
+//fun ImageFeature() {
+//    Row() {
+//        Icon(Icons.Outlined.Person, contentDescription = null)
+//        Spacer(modifier = Modifier.width(12.dp))
+//        Icon(Icons.Outlined.Refresh, contentDescription = null)
+//    }
+//
+
+//data class AppColor(val bodyTextColor: Color)
+//
+//val LocalAppColor = compositionLocalOf { AppColor(bodyTextColor = Color.Black) }
+//
+//fun getColor(): Color {
+//    val listColors = listOf(Color.Blue, Color.Red, Color.Yellow, Color.Cyan, Color.LightGray)
+//    val index = Random.nextInt(0, 4)
+//    return listColors[index]
+//}
 
 
 // ** Navigation
