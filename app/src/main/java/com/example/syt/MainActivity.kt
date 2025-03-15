@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.syt.ui.CreateNewPasswordScreen
+import com.example.syt.ui.profile.LoginScreen
 import com.example.syt.ui.theme.AppTheme
 import com.example.syt.ui.theme.SYTTheme
 
@@ -32,9 +33,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainApp() {
-    AppTheme {
-        CreateNewPasswordScreen()
-    }
+    LoginScreen()
 }
 
 @Preview(showBackground = true)
