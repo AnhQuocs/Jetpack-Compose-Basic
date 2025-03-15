@@ -7,3 +7,6 @@
 
 **Lazy Grid:
 ![Constraint Layout](image/lazy_grid.png)
+
+**OTP Side Efect:
+![Constraint Layout](image/otp-side-effect.png)
