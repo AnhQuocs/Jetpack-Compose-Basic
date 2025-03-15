@@ -9,11 +9,17 @@
 ### 🔐 Login Screen  
 ![Login Screen](image/login-screen.png)  
 
+---
+
 ### 📏 Constraint Layout  
 ![Constraint Layout](image/constraintlayout.png)  
 
+---
+
 ### 🔲 Lazy Grid  
 ![Lazy Grid](image/lazy_grid.png)  
+
+---
 
 ### 🔄 OTP Side Effect  
 ![OTP Side Effect](image/otp-side-effect.png)  
