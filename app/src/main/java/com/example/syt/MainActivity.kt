@@ -33,7 +33,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainApp() {
-    LoginScreen()
+    DemoScaffoldScreen()
 }
 
 @Preview(showBackground = true)
