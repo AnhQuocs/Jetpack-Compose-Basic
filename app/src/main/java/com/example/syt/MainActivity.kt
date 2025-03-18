@@ -8,9 +8,8 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import com.example.syt.ui.CreateNewPasswordScreen
-import com.example.syt.ui.profile.LoginScreen
-import com.example.syt.ui.theme.AppTheme
+import com.example.syt.ui.demo.DemoBottomSheetScaffold
+import com.example.syt.ui.demo.DemoScaffoldScreen
 import com.example.syt.ui.theme.SYTTheme
 
 // step 1: define ComposableLocal
@@ -33,7 +32,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainApp() {
-    DemoScaffoldScreen()
+    DemoBottomSheetScaffold()
 }
 
 @Preview(showBackground = true)
