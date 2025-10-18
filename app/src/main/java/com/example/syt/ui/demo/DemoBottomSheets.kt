@@ -75,7 +75,7 @@ fun DemoModalBottomSheet() {
         BodyDemo(
             modifier = Modifier.padding(paddingValues)
         ) {
-            isSheetOpen.value = true // Hiển thị Bottom Sheet
+            isSheetOpen.value = truea
         }
     }
 }
